@@ -7,7 +7,8 @@ Pod::Spec.new do |s|
   s.license      = { :type => 'MIT', :file => 'LICENSE.txt' }
   s.author       = { "Tom Benner" => "tombenner@gmail.com" }
   s.source       = { :git => "https://github.com/tombenner/nui.git", :tag => "v0.5.5" }
-  s.platform     = :ios, '5.1'
+  s.ios.deployment_target = '5.1'
+  s.tvos.deployment_target = '9.0'
 
   s.source_files = 'NUI', 'NUI/**/*.{h,m}'
   s.resources    = "NUI/Resources/*.png", "NUI/**/*.nss"
