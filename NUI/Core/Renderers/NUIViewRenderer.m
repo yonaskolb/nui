@@ -77,18 +77,45 @@
 
 + (void)renderSize:(UIView*)view withClass:(NSString*)className
 {
-    CGFloat height = view.frame.size.height;
-    if ([NUISettings hasProperty:@"height" withClass:className]) {
-        height = [NUISettings getFloat:@"height" withClass:className];
-    }
-    
-    CGFloat width = view.frame.size.width;
-    if ([NUISettings hasProperty:@"width" withClass:className]) {
-        width = [NUISettings getFloat:@"width" withClass:className];
-    }
-
-    if (height != view.frame.size.height || width != view.frame.size.width) {
-        view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y, width, height);
+    NSArray <NSLayoutConstraint *> *viewConstraints = [view constraints];
+    BOOL viewUseAutolayout = viewConstraints != nil && viewConstraints;
+    if (viewUseAutolayout){
+        if ([NUISettings hasProperty:@"height" withClass:className]) {
+            CGFloat height = [NUISettings getFloat:@"height" withClass:className];
+            //Or use custom identifier string for example NUIHeightConstraint
+            NSPredicate *heightConstraintPredicate = [NSPredicate predicateWithFormat:@"self.firstItem == %@ && self.firstAttribute == %d && self.secondAttribute == %d",view,NSLayoutAttributeHeight,NSLayoutAttributeNotAnAttribute];
+            NSLayoutConstraint *heightConstraint = [[viewConstraints filteredArrayUsingPredicate:heightConstraintPredicate] firstObject];
+            if(heightConstraint != nil){
+                [heightConstraint setConstant:height];
+            }
+            else {
+                [view.heightAnchor constraintEqualToConstant:height].active = YES;
+            }
+        }
+        if ([NUISettings hasProperty:@"width" withClass:className]) {
+            CGFloat width = [NUISettings getFloat:@"width" withClass:className];
+            //Or use custom identifier string for example NUIWidthConstraint
+            NSPredicate *widthConstraintPredicate = [NSPredicate predicateWithFormat:@"self.firstItem == %@ && self.firstAttribute == %d && self.secondAttribute == %d",view,NSLayoutAttributeWidth,NSLayoutAttributeNotAnAttribute];
+            NSLayoutConstraint *widthConstraint = [[viewConstraints filteredArrayUsingPredicate:widthConstraintPredicate] firstObject];
+            if(widthConstraint != nil){
+                [widthConstraint setConstant:width];
+            }
+            else {
+                [view.widthAnchor constraintEqualToConstant:width].active = YES;
+            }
+        }
+    } else{
+        CGFloat height = view.frame.size.height;
+        if ([NUISettings hasProperty:@"height" withClass:className]) {
+            height = [NUISettings getFloat:@"height" withClass:className];
+        }
+        CGFloat width = view.frame.size.width;
+        if ([NUISettings hasProperty:@"width" withClass:className]) {
+            width = [NUISettings getFloat:@"width" withClass:className];
+        }
+        if (height != view.frame.size.height || width != view.frame.size.width) {
+            view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y, width, height);
+        }
     }
 }
 
